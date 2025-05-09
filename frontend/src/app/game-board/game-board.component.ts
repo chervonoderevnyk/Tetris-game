@@ -14,16 +14,43 @@ export class GameBoardComponent implements OnInit {
   cols = 10;
   grid: string[][] = [];
   currentTetromino!: Tetromino;
+  nextTetromino!: Tetromino; // Змінна для наступної фігури
   position: [number, number] = [0, 4];
   intervalId: any;
   score: number = 0; // Змінна для підрахунку балів
   level: number = 1; // Змінна для рівня
   baseSpeed: number = 900; // Базова швидкість (мс)
+  isGameRunning: boolean = false; // Стан гри
+  isPaused: boolean = false; // Стан паузи
 
   ngOnInit(): void {
     this.resetGrid();
-    this.spawnTetromino();
-    this.startGameLoop();
+    this.nextTetromino = this.getRandomTetromino(); // Ініціалізуємо наступну фігуру
+  }
+
+
+  startGame(): void {
+    if (this.isGameRunning) return; // Якщо гра вже запущена, нічого не робимо
+  
+    this.isGameRunning = true;
+    this.isPaused = false; // Знімаємо паузу
+    this.score = 0; // Скидаємо бали
+    this.level = 1; // Скидаємо рівень
+    this.resetGrid(); // Скидаємо сітку
+    this.spawnTetromino(); // Спавнимо нову фігуру
+    this.startGameLoop(); // Запускаємо ігровий цикл
+  }
+
+  togglePause(): void {
+    if (!this.isGameRunning) return; // Якщо гра не запущена, нічого не робимо
+
+    this.isPaused = !this.isPaused;
+
+    if (this.isPaused) {
+      clearInterval(this.intervalId); // Зупиняємо таймер
+    } else {
+      this.updateGameSpeed(); // Відновлюємо таймер
+    }
   }
 
   resetGrid(): void {
@@ -32,16 +59,21 @@ export class GameBoardComponent implements OnInit {
     );
   }
 
-  spawnTetromino(): void {
+ getRandomTetromino(): Tetromino {
     const index = Math.floor(Math.random() * TETROMINOES.length);
-    const newTetromino = TETROMINOES[index];
-    const newPosition: [number, number] = [0, 4];
-  
-    const canPlace = newTetromino.shape.every(([dy, dx]) => {
-      const y = newPosition[0] + dy;
-      const x = newPosition[1] + dx;
-  
-      if (y < 0) return true; // дозволяємо частини над сіткою
+    return TETROMINOES[index];
+  }
+
+  spawnTetromino(): void {
+    this.currentTetromino = this.nextTetromino; // Поточна фігура стає наступною
+    this.position = [0, 4]; // Початкова позиція фігури
+    this.nextTetromino = this.getRandomTetromino(); // Генеруємо нову наступну фігуру
+
+    const canPlace = this.currentTetromino.shape.every(([dy, dx]) => {
+      const y = this.position[0] + dy;
+      const x = this.position[1] + dx;
+
+      if (y < 0) return true;
       return (
         y >= 0 &&
         y < this.rows &&
@@ -50,19 +82,23 @@ export class GameBoardComponent implements OnInit {
         this.grid[y][x] === ''
       );
     });
-  
+
     if (!canPlace) {
-      clearInterval(this.intervalId); // 🛑 Зупиняємо гру
-      alert('💀 Game Over!');         // 🔔 Повідомлення
+      clearInterval(this.intervalId);
+      this.isGameRunning = false;
+      alert('💀 Game Over!');
       return;
     }
-  
-    this.currentTetromino = newTetromino;
-    this.position = newPosition;
+
     this.drawTetromino();
   }
-  
-  
+
+  getNextTetrominoCell(row: number, col: number): string {
+    if (!this.nextTetromino) return '';
+    return this.nextTetromino.shape.some(([dy, dx]) => dy + 1 === row && dx + 1 === col)
+      ? this.nextTetromino.color // Використовуємо колір фігури
+      : '';
+  }
 
   drawTetromino(): void {
     this.currentTetromino.shape.forEach(([dy, dx]) => {
@@ -101,7 +137,6 @@ export class GameBoardComponent implements OnInit {
       );
     });
   }
-  
 
   moveDown(): void {
     this.clearTetromino(); // важливо!
@@ -116,7 +151,6 @@ export class GameBoardComponent implements OnInit {
     }
   }
   
-  
   startGameLoop(): void {
     this.updateGameSpeed(); // Оновлюємо швидкість гри залежно від рівня
   }
@@ -126,17 +160,38 @@ export class GameBoardComponent implements OnInit {
       clearInterval(this.intervalId); // Зупиняємо попередній таймер
     }
 
-    const speed = Math.max(this.baseSpeed - (this.level - 1) * 100, 100); // Зменшуємо швидкість із кожним рівнем
-    this.intervalId = setInterval(() => {
-      this.moveDown();
-    }, speed);
+    if (!this.isPaused) {
+      const speed = Math.max(this.baseSpeed - (this.level - 1) * 100, 100); // Зменшуємо швидкість із кожним рівнем
+      this.intervalId = setInterval(() => {
+        this.moveDown();
+      }, speed);
+    }
   }
 
   updateScore(rowsCleared: number): void {
-    const pointsPerRow = 10; // Кількість балів за один рядок
-    this.score += rowsCleared * pointsPerRow; // Додаємо бали
-
-    // Оновлюємо рівень кожні ? балів
+    let points = 0;
+  
+    // Визначаємо кількість балів залежно від кількості очищених рядків
+    switch (rowsCleared) {
+      case 1:
+        points = 10; // 1 рядок = 10 балів
+        break;
+      case 2:
+        points = 30; // 2 рядки = 30 балів
+        break;
+      case 3:
+        points = 40; // 3 рядки = 40 балів
+        break;
+      case 4:
+        points = 60; // 4 рядки = 60 балів
+        break;
+      default:
+        points = 0; // Якщо рядків не очищено, балів немає
+    }
+  
+    this.score += points; // Додаємо бали до загального рахунку
+  
+    // Оновлюємо рівень кожні 20 балів
     const newLevel = Math.floor(this.score / 20) + 1;
     if (newLevel > this.level) {
       this.level = newLevel;
@@ -145,27 +200,40 @@ export class GameBoardComponent implements OnInit {
   }
 
   @HostListener('window:keydown', ['$event'])
-  handleKey(event: KeyboardEvent): void {
-    let offsetY = 0;
-    let offsetX = 0;
-  
-    if (event.key === 'ArrowLeft') offsetX = -1;
-    else if (event.key === 'ArrowRight') offsetX = 1;
-    else if (event.key === 'ArrowDown') offsetY = 1;
-    else if (event.key === ' ') {
+handleKey(event: KeyboardEvent): void {
+  let offsetY = 0;
+  let offsetX = 0;
+
+  if (event.key === 'ArrowLeft') {
+    offsetX = -1;
+  } else if (event.key === 'ArrowRight') {
+    offsetX = 1;
+  } else if (event.key === 'ArrowDown') {
+    offsetY = 1;
+  } else if (event.key === ' ') {
+    // Перевіряємо, чи гра запущена і не на паузі, перед перевертанням фігури
+    if (this.isGameRunning && !this.isPaused) {
       this.rotateTetromino();
-      return;
-    } else return;
-  
-  
-    this.clearTetromino();
-  
-    if (this.canMoveTo(offsetY, offsetX)) {
-      this.position = [this.position[0] + offsetY, this.position[1] + offsetX];
     }
-  
-    this.drawTetromino();
+    event.preventDefault(); // Запобігаємо будь-яким іншим діям для клавіші space
+    return;
+  } else {
+    return; // Ігноруємо інші клавіші
   }
+
+  // Якщо гра на паузі, ігноруємо інші дії
+  if (this.isPaused) {
+    return;
+  }
+
+  this.clearTetromino();
+
+  if (this.canMoveTo(offsetY, offsetX)) {
+    this.position = [this.position[0] + offsetY, this.position[1] + offsetX];
+  }
+
+  this.drawTetromino();
+}
   
   rotateTetromino(): void {
     if (!this.currentTetromino.isRotatable) {
@@ -203,7 +271,6 @@ export class GameBoardComponent implements OnInit {
     this.drawTetromino(); // Малюємо фігуру з новою (або старою) формою
   }
   
-
   fixTetromino(): void {
     this.currentTetromino.shape.forEach(([dy, dx]) => {
       const y = this.position[0] + dy;

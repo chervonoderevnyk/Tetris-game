@@ -1,9 +1,34 @@
 <div class="score-board">
-  <h2>Level: {{ level }}</h2>
-  <h2>Score: {{ score }}</h2>
+  <h2>📈 Рівень: {{ level }}</h2>
+  <h2>🏆 Бали: {{ score }}</h2>
 </div>
-<div class="board">
-  <div *ngFor="let row of grid" class="row">
-    <div *ngFor="let cell of row" class="cell" [ngClass]="cell"></div>
+<div class="game-container">
+  <div class="next-tetromino">
+    <div class="next-grid">
+      <div *ngFor="let row of [0, 1, 2, 3]" class="row">
+        <div
+          *ngFor="let col of [0, 1, 2, 3]"
+          class="cell"
+          [ngClass]="getNextTetrominoCell(row, col)"
+        ></div>
+      </div>
+    </div>
   </div>
+  <div class="board">
+    <div *ngFor="let row of grid" class="row">
+      <div *ngFor="let cell of row" class="cell" [ngClass]="cell"></div>
+    </div>
+  </div>
+</div>
+<div class="controls">
+  <button 
+    (click)="startGame()" 
+    [class.disabled]="isGameRunning">
+    СТАРТ
+  </button>
+  <button 
+    (click)="togglePause()" 
+    [class.disabled]="!isGameRunning">
+    {{ isPaused ? 'Продовжити' : 'Пауза' }}
+  </button>
 </div>
