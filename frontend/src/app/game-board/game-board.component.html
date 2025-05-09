@@ -1,7 +1,8 @@
-<div tabindex="0" class="game-board">
+<div class="score-board">
+  <h2>Score: {{ score }}</h2>
+</div>
 <div class="board">
   <div *ngFor="let row of grid" class="row">
     <div *ngFor="let cell of row" class="cell" [ngClass]="cell"></div>
   </div>
-</div>
 </div>

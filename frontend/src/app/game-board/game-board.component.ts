@@ -16,6 +16,7 @@ export class GameBoardComponent implements OnInit {
   currentTetromino!: Tetromino;
   position: [number, number] = [0, 4];
   intervalId: any;
+  score: number = 0;
 
   ngOnInit(): void {
     this.resetGrid();
@@ -118,7 +119,7 @@ export class GameBoardComponent implements OnInit {
   startGameLoop(): void {
     this.intervalId = setInterval(() => {
       this.moveDown();
-    }, 300);
+    }, 900);
   }
 
   @HostListener('window:keydown', ['$event'])
@@ -190,19 +191,38 @@ export class GameBoardComponent implements OnInit {
       }
     });
 
-    this.clearFullRows(); // Перевіряємо та очищаємо заповнені рядки
+    const rowsCleared = this.clearFullRows(); // Перевіряємо та очищаємо заповнені рядки
+    this.updateScore(rowsCleared); // Оновлюємо бали
   }
 
-  clearFullRows(): void {
-    // Фільтруємо рядки, які не заповнені
-    const newGrid = this.grid.filter(row => row.some(cell => cell === ''));
+  clearFullRows(): number {
+    const rowsToClear: number[] = [];
 
-    // Додаємо порожні рядки зверху, щоб компенсувати видалені
-    while (newGrid.length < this.rows) {
-      newGrid.unshift(Array(this.cols).fill(''));
+    // Знаходимо заповнені рядки
+    this.grid.forEach((row, rowIndex) => {
+      if (row.every(cell => cell !== '')) {
+        rowsToClear.push(rowIndex);
+      }
+    });
+
+    if (rowsToClear.length > 0) {
+      // Видаляємо заповнені рядки
+      const newGrid = this.grid.filter((_, rowIndex) => !rowsToClear.includes(rowIndex));
+
+      // Додаємо порожні рядки зверху
+      while (newGrid.length < this.rows) {
+        newGrid.unshift(Array(this.cols).fill(''));
+      }
+
+      this.grid = newGrid; // Оновлюємо сітку
     }
 
-    this.grid = newGrid; // Оновлюємо сітку
+    return rowsToClear.length; // Повертаємо кількість очищених рядків
+  }
+
+  updateScore(rowsCleared: number): void {
+    const pointsPerRow = 100; // Кількість балів за один рядок
+    this.score += rowsCleared * pointsPerRow; // Додаємо бали
   }
   
 }
