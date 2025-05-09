@@ -20,7 +20,7 @@ export class GameBoardComponent implements OnInit {
   level: number = 1; // Змінна для рівня
   baseSpeed: number = 900; // Базова швидкість (мс)
   isGameRunning: boolean = false; // Стан гри
-
+  isPaused: boolean = false; // Стан паузи
 
   ngOnInit(): void {
     this.resetGrid();
@@ -34,6 +34,18 @@ export class GameBoardComponent implements OnInit {
     this.resetGrid();
     this.spawnTetromino();
     this.startGameLoop();
+  }
+
+  togglePause(): void {
+    if (!this.isGameRunning) return; // Якщо гра не запущена, нічого не робимо
+
+    this.isPaused = !this.isPaused;
+
+    if (this.isPaused) {
+      clearInterval(this.intervalId); // Зупиняємо таймер
+    } else {
+      this.updateGameSpeed(); // Відновлюємо таймер
+    }
   }
 
   resetGrid(): void {
@@ -136,10 +148,12 @@ export class GameBoardComponent implements OnInit {
       clearInterval(this.intervalId); // Зупиняємо попередній таймер
     }
 
-    const speed = Math.max(this.baseSpeed - (this.level - 1) * 100, 100); // Зменшуємо швидкість із кожним рівнем
-    this.intervalId = setInterval(() => {
-      this.moveDown();
-    }, speed);
+    if (!this.isPaused) {
+      const speed = Math.max(this.baseSpeed - (this.level - 1) * 100, 100); // Зменшуємо швидкість із кожним рівнем
+      this.intervalId = setInterval(() => {
+        this.moveDown();
+      }, speed);
+    }
   }
 
   updateScore(rowsCleared: number): void {

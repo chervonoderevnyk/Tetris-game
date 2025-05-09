@@ -70,6 +70,10 @@
 .controls {
   text-align: center;
   margin-bottom: 10px;
+  display: flex;
+  flex-direction: column; /* Розташування кнопок вертикально */
+  align-items: center; /* Вирівнювання по центру */
+  gap: 10px; /* Відступ між кнопками */
 }
 
 button {
@@ -80,8 +84,16 @@ button {
   border: none;
   border-radius: 5px;
   cursor: pointer;
+  width: 150px; /* Фіксована ширина для однакового розміру кнопок */
 }
 
 button:hover {
   background-color: #45a049;
+}
+
+button.disabled {
+  background-color: #a9a9a9; /* Сірий колір для неактивної кнопки */
+  cursor: not-allowed; /* Вказівник для неактивної кнопки */
+  transform: scale(0.90); /* Трохи зменшуємо розмір */
+  transition: transform 0.2s ease; /* Плавний перехід */
 }

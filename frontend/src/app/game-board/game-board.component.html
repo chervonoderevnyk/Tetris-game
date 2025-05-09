@@ -8,5 +8,14 @@
   </div>
 </div>
 <div class="controls">
-  <button (click)="startGame()">СТАРТ</button>
+  <button 
+    (click)="startGame()" 
+    [class.disabled]="isGameRunning">
+    СТАРТ
+  </button>
+  <button 
+    (click)="togglePause()" 
+    [class.disabled]="!isGameRunning">
+    {{ isPaused ? 'Продовжити' : 'Пауза' }}
+  </button>
 </div>
