@@ -1,9 +1,12 @@
 <div class="score-board">
-  <h2>Level: {{ level }}</h2>
-  <h2>Score: {{ score }}</h2>
+  <h2>📈 Level: {{ level }}</h2>
+  <h2>🏆 Score: {{ score }}</h2>
 </div>
 <div class="board">
   <div *ngFor="let row of grid" class="row">
     <div *ngFor="let cell of row" class="cell" [ngClass]="cell"></div>
   </div>
+</div>
+<div class="controls">
+  <button (click)="startGame()">СТАРТ</button>
 </div>

@@ -19,8 +19,18 @@ export class GameBoardComponent implements OnInit {
   score: number = 0; // Змінна для підрахунку балів
   level: number = 1; // Змінна для рівня
   baseSpeed: number = 900; // Базова швидкість (мс)
+  isGameRunning: boolean = false; // Стан гри
+
 
   ngOnInit(): void {
+    this.resetGrid();
+  }
+
+  startGame(): void {
+    if (this.isGameRunning) return; // Якщо гра вже запущена, нічого не робимо
+    this.isGameRunning = true;
+    this.score = 0; // Скидаємо бали
+    this.level = 1; // Скидаємо рівень
     this.resetGrid();
     this.spawnTetromino();
     this.startGameLoop();
