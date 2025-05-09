@@ -16,7 +16,9 @@ export class GameBoardComponent implements OnInit {
   currentTetromino!: Tetromino;
   position: [number, number] = [0, 4];
   intervalId: any;
-  score: number = 0;
+  score: number = 0; // Змінна для підрахунку балів
+  level: number = 1; // Змінна для рівня
+  baseSpeed: number = 900; // Базова швидкість (мс)
 
   ngOnInit(): void {
     this.resetGrid();
@@ -115,11 +117,31 @@ export class GameBoardComponent implements OnInit {
   }
   
   
-
   startGameLoop(): void {
+    this.updateGameSpeed(); // Оновлюємо швидкість гри залежно від рівня
+  }
+
+  updateGameSpeed(): void {
+    if (this.intervalId) {
+      clearInterval(this.intervalId); // Зупиняємо попередній таймер
+    }
+
+    const speed = Math.max(this.baseSpeed - (this.level - 1) * 100, 100); // Зменшуємо швидкість із кожним рівнем
     this.intervalId = setInterval(() => {
       this.moveDown();
-    }, 900);
+    }, speed);
+  }
+
+  updateScore(rowsCleared: number): void {
+    const pointsPerRow = 10; // Кількість балів за один рядок
+    this.score += rowsCleared * pointsPerRow; // Додаємо бали
+
+    // Оновлюємо рівень кожні ? балів
+    const newLevel = Math.floor(this.score / 20) + 1;
+    if (newLevel > this.level) {
+      this.level = newLevel;
+      this.updateGameSpeed(); // Оновлюємо швидкість гри
+    }
   }
 
   @HostListener('window:keydown', ['$event'])
@@ -218,11 +240,6 @@ export class GameBoardComponent implements OnInit {
     }
 
     return rowsToClear.length; // Повертаємо кількість очищених рядків
-  }
-
-  updateScore(rowsCleared: number): void {
-    const pointsPerRow = 100; // Кількість балів за один рядок
-    this.score += rowsCleared * pointsPerRow; // Додаємо бали
   }
   
 }
