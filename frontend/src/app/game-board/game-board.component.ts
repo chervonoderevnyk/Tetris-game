@@ -28,12 +28,14 @@ export class GameBoardComponent implements OnInit {
 
   startGame(): void {
     if (this.isGameRunning) return; // Якщо гра вже запущена, нічого не робимо
+  
     this.isGameRunning = true;
+    this.isPaused = false; // Знімаємо паузу
     this.score = 0; // Скидаємо бали
     this.level = 1; // Скидаємо рівень
-    this.resetGrid();
-    this.spawnTetromino();
-    this.startGameLoop();
+    this.resetGrid(); // Скидаємо сітку
+    this.spawnTetromino(); // Спавнимо нову фігуру
+    this.startGameLoop(); // Запускаємо ігровий цикл
   }
 
   togglePause(): void {
@@ -75,7 +77,8 @@ export class GameBoardComponent implements OnInit {
   
     if (!canPlace) {
       clearInterval(this.intervalId); // 🛑 Зупиняємо гру
-      alert('💀 Game Over!');         // 🔔 Повідомлення
+      this.isGameRunning = false; // Встановлюємо стан гри як завершений
+      alert('💀 Game Over!'); // 🔔 Повідомлення
       return;
     }
   
@@ -83,8 +86,6 @@ export class GameBoardComponent implements OnInit {
     this.position = newPosition;
     this.drawTetromino();
   }
-  
-  
 
   drawTetromino(): void {
     this.currentTetromino.shape.forEach(([dy, dx]) => {
