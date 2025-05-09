@@ -169,27 +169,40 @@ export class GameBoardComponent implements OnInit {
   }
 
   @HostListener('window:keydown', ['$event'])
-  handleKey(event: KeyboardEvent): void {
-    let offsetY = 0;
-    let offsetX = 0;
-  
-    if (event.key === 'ArrowLeft') offsetX = -1;
-    else if (event.key === 'ArrowRight') offsetX = 1;
-    else if (event.key === 'ArrowDown') offsetY = 1;
-    else if (event.key === ' ') {
+handleKey(event: KeyboardEvent): void {
+  let offsetY = 0;
+  let offsetX = 0;
+
+  if (event.key === 'ArrowLeft') {
+    offsetX = -1;
+  } else if (event.key === 'ArrowRight') {
+    offsetX = 1;
+  } else if (event.key === 'ArrowDown') {
+    offsetY = 1;
+  } else if (event.key === ' ') {
+    // Перевіряємо, чи гра запущена і не на паузі, перед перевертанням фігури
+    if (this.isGameRunning && !this.isPaused) {
       this.rotateTetromino();
-      return;
-    } else return;
-  
-  
-    this.clearTetromino();
-  
-    if (this.canMoveTo(offsetY, offsetX)) {
-      this.position = [this.position[0] + offsetY, this.position[1] + offsetX];
     }
-  
-    this.drawTetromino();
+    event.preventDefault(); // Запобігаємо будь-яким іншим діям для клавіші space
+    return;
+  } else {
+    return; // Ігноруємо інші клавіші
   }
+
+  // Якщо гра на паузі, ігноруємо інші дії
+  if (this.isPaused) {
+    return;
+  }
+
+  this.clearTetromino();
+
+  if (this.canMoveTo(offsetY, offsetX)) {
+    this.position = [this.position[0] + offsetY, this.position[1] + offsetX];
+  }
+
+  this.drawTetromino();
+}
   
   rotateTetromino(): void {
     if (!this.currentTetromino.isRotatable) {
