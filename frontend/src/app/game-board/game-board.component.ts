@@ -1,6 +1,7 @@
 import { Component, OnInit, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Tetromino, TETROMINOES } from './tetris/tetromino';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-game-board',
@@ -22,6 +23,8 @@ export class GameBoardComponent implements OnInit {
   baseSpeed: number = 900; // Базова швидкість (мс)
   isGameRunning: boolean = false; // Стан гри
   isPaused: boolean = false; // Стан паузи
+
+  constructor(private router: Router) {}
 
   ngOnInit(): void {
     this.resetGrid();
@@ -86,7 +89,9 @@ export class GameBoardComponent implements OnInit {
     if (!canPlace) {
       clearInterval(this.intervalId);
       this.isGameRunning = false;
-      alert('💀 Game Over!');
+      this.router.navigate(['/game-over'], {
+        queryParams: { score: this.score, level: this.level } // Передаємо бали та рівень
+      });
       return;
     }
 
@@ -191,8 +196,8 @@ export class GameBoardComponent implements OnInit {
   
     this.score += points; // Додаємо бали до загального рахунку
   
-    // Оновлюємо рівень кожні 20 балів
-    const newLevel = Math.floor(this.score / 20) + 1;
+    // Оновлюємо рівень кожні 30 балів
+    const newLevel = Math.floor(this.score / 30) + 1;
     if (newLevel > this.level) {
       this.level = newLevel;
       this.updateGameSpeed(); // Оновлюємо швидкість гри
