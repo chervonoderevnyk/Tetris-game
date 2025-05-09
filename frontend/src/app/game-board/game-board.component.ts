@@ -129,15 +129,55 @@ export class GameBoardComponent implements OnInit {
     if (event.key === 'ArrowLeft') offsetX = -1;
     else if (event.key === 'ArrowRight') offsetX = 1;
     else if (event.key === 'ArrowDown') offsetY = 1;
-    else return;
+    else if (event.key === ' ') {
+      this.rotateTetromino();
+      return;
+    } else return;
   
-    this.clearTetromino(); // важливо!
+  
+    this.clearTetromino();
   
     if (this.canMoveTo(offsetY, offsetX)) {
       this.position = [this.position[0] + offsetY, this.position[1] + offsetX];
     }
   
-    this.drawTetromino(); // завжди малюємо після перевірки
+    this.drawTetromino();
+  }
+  
+  rotateTetromino(): void {
+    if (!this.currentTetromino.isRotatable) {
+      return; // Якщо фігура не обертається, просто виходимо
+    }
+  
+    this.clearTetromino(); // Очищаємо поточну фігуру з сітки
+  
+    // Зберігаємо стару форму для відкату, якщо обертання неможливе
+    const oldShape = [...this.currentTetromino.shape];
+  
+    // Обчислюємо нову форму (обертання за годинниковою стрілкою)
+    const newShape: [number, number][] = this.currentTetromino.shape.map(([dy, dx]) => [-dx, dy]);
+  
+    // Перевіряємо, чи можна виконати обертання
+    const canRotate = newShape.every(([dy, dx]) => {
+      const y = this.position[0] + dy;
+      const x = this.position[1] + dx;
+  
+      return (
+        y >= 0 &&
+        y < this.rows &&
+        x >= 0 &&
+        x < this.cols &&
+        this.grid[y][x] === '' // Перевіряємо, чи клітинка порожня
+      );
+    });
+  
+    if (canRotate) {
+      this.currentTetromino.shape = newShape; // Застосовуємо нову форму
+    } else {
+      this.currentTetromino.shape = oldShape; // Відкат до старої форми
+    }
+  
+    this.drawTetromino(); // Малюємо фігуру з новою (або старою) формою
   }
   
 
@@ -149,6 +189,20 @@ export class GameBoardComponent implements OnInit {
         this.grid[y][x] = this.currentTetromino.color;
       }
     });
+
+    this.clearFullRows(); // Перевіряємо та очищаємо заповнені рядки
+  }
+
+  clearFullRows(): void {
+    // Фільтруємо рядки, які не заповнені
+    const newGrid = this.grid.filter(row => row.some(cell => cell === ''));
+
+    // Додаємо порожні рядки зверху, щоб компенсувати видалені
+    while (newGrid.length < this.rows) {
+      newGrid.unshift(Array(this.cols).fill(''));
+    }
+
+    this.grid = newGrid; // Оновлюємо сітку
   }
   
 }
