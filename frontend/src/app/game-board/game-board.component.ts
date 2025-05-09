@@ -14,6 +14,7 @@ export class GameBoardComponent implements OnInit {
   cols = 10;
   grid: string[][] = [];
   currentTetromino!: Tetromino;
+  nextTetromino!: Tetromino; // Змінна для наступної фігури
   position: [number, number] = [0, 4];
   intervalId: any;
   score: number = 0; // Змінна для підрахунку балів
@@ -24,7 +25,9 @@ export class GameBoardComponent implements OnInit {
 
   ngOnInit(): void {
     this.resetGrid();
+    this.nextTetromino = this.getRandomTetromino(); // Ініціалізуємо наступну фігуру
   }
+
 
   startGame(): void {
     if (this.isGameRunning) return; // Якщо гра вже запущена, нічого не робимо
@@ -56,16 +59,21 @@ export class GameBoardComponent implements OnInit {
     );
   }
 
-  spawnTetromino(): void {
+ getRandomTetromino(): Tetromino {
     const index = Math.floor(Math.random() * TETROMINOES.length);
-    const newTetromino = TETROMINOES[index];
-    const newPosition: [number, number] = [0, 4];
-  
-    const canPlace = newTetromino.shape.every(([dy, dx]) => {
-      const y = newPosition[0] + dy;
-      const x = newPosition[1] + dx;
-  
-      if (y < 0) return true; // дозволяємо частини над сіткою
+    return TETROMINOES[index];
+  }
+
+  spawnTetromino(): void {
+    this.currentTetromino = this.nextTetromino; // Поточна фігура стає наступною
+    this.position = [0, 4]; // Початкова позиція фігури
+    this.nextTetromino = this.getRandomTetromino(); // Генеруємо нову наступну фігуру
+
+    const canPlace = this.currentTetromino.shape.every(([dy, dx]) => {
+      const y = this.position[0] + dy;
+      const x = this.position[1] + dx;
+
+      if (y < 0) return true;
       return (
         y >= 0 &&
         y < this.rows &&
@@ -74,17 +82,22 @@ export class GameBoardComponent implements OnInit {
         this.grid[y][x] === ''
       );
     });
-  
+
     if (!canPlace) {
-      clearInterval(this.intervalId); // 🛑 Зупиняємо гру
-      this.isGameRunning = false; // Встановлюємо стан гри як завершений
-      alert('💀 Game Over!'); // 🔔 Повідомлення
+      clearInterval(this.intervalId);
+      this.isGameRunning = false;
+      alert('💀 Game Over!');
       return;
     }
-  
-    this.currentTetromino = newTetromino;
-    this.position = newPosition;
+
     this.drawTetromino();
+  }
+
+  getNextTetrominoCell(row: number, col: number): string {
+    if (!this.nextTetromino) return '';
+    return this.nextTetromino.shape.some(([dy, dx]) => dy + 1 === row && dx + 1 === col)
+      ? this.nextTetromino.color // Використовуємо колір фігури
+      : '';
   }
 
   drawTetromino(): void {
