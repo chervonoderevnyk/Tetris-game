@@ -124,7 +124,6 @@ export class GameBoardComponent implements OnInit {
       );
     });
   }
-  
 
   moveDown(): void {
     this.clearTetromino(); // важливо!
@@ -138,7 +137,6 @@ export class GameBoardComponent implements OnInit {
       this.spawnTetromino();
     }
   }
-  
   
   startGameLoop(): void {
     this.updateGameSpeed(); // Оновлюємо швидкість гри залежно від рівня
@@ -158,10 +156,29 @@ export class GameBoardComponent implements OnInit {
   }
 
   updateScore(rowsCleared: number): void {
-    const pointsPerRow = 10; // Кількість балів за один рядок
-    this.score += rowsCleared * pointsPerRow; // Додаємо бали
-
-    // Оновлюємо рівень кожні ? балів
+    let points = 0;
+  
+    // Визначаємо кількість балів залежно від кількості очищених рядків
+    switch (rowsCleared) {
+      case 1:
+        points = 10; // 1 рядок = 10 балів
+        break;
+      case 2:
+        points = 30; // 2 рядки = 30 балів
+        break;
+      case 3:
+        points = 40; // 3 рядки = 40 балів
+        break;
+      case 4:
+        points = 60; // 4 рядки = 60 балів
+        break;
+      default:
+        points = 0; // Якщо рядків не очищено, балів немає
+    }
+  
+    this.score += points; // Додаємо бали до загального рахунку
+  
+    // Оновлюємо рівень кожні 20 балів
     const newLevel = Math.floor(this.score / 20) + 1;
     if (newLevel > this.level) {
       this.level = newLevel;
@@ -241,7 +258,6 @@ handleKey(event: KeyboardEvent): void {
     this.drawTetromino(); // Малюємо фігуру з новою (або старою) формою
   }
   
-
   fixTetromino(): void {
     this.currentTetromino.shape.forEach(([dy, dx]) => {
       const y = this.position[0] + dy;
