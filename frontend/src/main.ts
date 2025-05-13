@@ -1,12 +1,12 @@
 import { bootstrapApplication } from '@angular/platform-browser';
 import { provideRouter, Routes } from '@angular/router';
 import { AppComponent } from './app/app.component';
-import { GameBoardComponent } from './app/game-board/game-board.component';
 import { GameOverComponent } from './app/game-over/game-over.component';
+import { BaseComponent } from './app/base/base.component';
 
 const routes: Routes = [
-  { path: '', component: GameBoardComponent },
-  { path: 'game-over', component: GameOverComponent }
+  { path: '', component: BaseComponent }, // Головний маршрут
+  { path: 'game-over', component: GameOverComponent } // Маршрут для GameOverComponent
 ];
 
 bootstrapApplication(AppComponent, {

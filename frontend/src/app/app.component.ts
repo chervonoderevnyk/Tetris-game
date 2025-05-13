@@ -1,13 +1,17 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { HeaderComponent } from './header/header.component';
-import { BaseComponent } from './base/base.component';
+import { FooterComponent } from './footer/footer.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [BaseComponent],
-  template: `<app-base></app-base>`,
+  imports: [RouterOutlet, HeaderComponent, FooterComponent],
+  template: `
+    <app-header></app-header>
+    <router-outlet></router-outlet>
+    <app-footer></app-footer>
+  `,
   styleUrls: ['./app.component.scss']
 })
 export class AppComponent {}
