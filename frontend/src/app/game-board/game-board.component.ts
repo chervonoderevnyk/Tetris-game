@@ -1,4 +1,4 @@
-import { Component, OnInit, HostListener } from '@angular/core';
+import { Component, OnInit, HostListener, EventEmitter, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Tetromino, TETROMINOES } from './tetris/tetromino';
 import { Router } from '@angular/router';
@@ -11,6 +11,10 @@ import { Router } from '@angular/router';
   styleUrls: ['./game-board.component.scss']
 })
 export class GameBoardComponent implements OnInit {
+
+  @Output() scoreChange = new EventEmitter<number>();
+  @Output() levelChange = new EventEmitter<number>();
+
   rows = 20;
   cols = 10;
   grid: string[][] = [];
@@ -23,6 +27,7 @@ export class GameBoardComponent implements OnInit {
   baseSpeed: number = 900; // Базова швидкість (мс)
   isGameRunning: boolean = false; // Стан гри
   isPaused: boolean = false; // Стан паузи
+
 
   constructor(private router: Router) {}
 
@@ -176,34 +181,35 @@ export class GameBoardComponent implements OnInit {
   updateScore(rowsCleared: number): void {
     let points = 0;
   
-    // Визначаємо кількість балів залежно від кількості очищених рядків
     switch (rowsCleared) {
       case 1:
-        points = 10; // 1 рядок = 10 балів
+        points = 10;
         break;
       case 2:
-        points = 30; // 2 рядки = 30 балів
+        points = 30;
         break;
       case 3:
-        points = 40; // 3 рядки = 40 балів
+        points = 40;
         break;
       case 4:
-        points = 60; // 4 рядки = 60 балів
+        points = 60;
         break;
       default:
-        points = 0; // Якщо рядків не очищено, балів немає
+        points = 0;
     }
   
-    this.score += points; // Додаємо бали до загального рахунку
+    this.score += points;
   
-    // Оновлюємо рівень кожні 30 балів
     const newLevel = Math.floor(this.score / 30) + 1;
     if (newLevel > this.level) {
       this.level = newLevel;
-      this.updateGameSpeed(); // Оновлюємо швидкість гри
+      this.updateGameSpeed();
     }
+    
+    this.scoreChange.emit(this.score);
+    this.levelChange.emit(this.level);
   }
-
+  
   @HostListener('window:keydown', ['$event'])
 handleKey(event: KeyboardEvent): void {
   let offsetY = 0;
@@ -317,4 +323,6 @@ handleKey(event: KeyboardEvent): void {
 }
 
 
+
+// Removed incorrect Output function implementation
 

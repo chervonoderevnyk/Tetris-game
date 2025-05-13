@@ -90,6 +90,7 @@ button.disabled {
   flex-direction: column; /* Розташування елементів вертикально */
   align-items: center; /* Вирівнювання по центру */
   gap: 20px; /* Відступ між сітками */
+  margin-top: 20px; /* Відступ між game-container і хедером */
 }
 
 .next-tetromino {
