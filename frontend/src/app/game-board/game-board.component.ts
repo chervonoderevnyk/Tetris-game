@@ -209,7 +209,7 @@ export class GameBoardComponent implements OnInit {
     this.scoreChange.emit(this.score);
     this.levelChange.emit(this.level);
   }
-  
+
   @HostListener('window:keydown', ['$event'])
 handleKey(event: KeyboardEvent): void {
   let offsetY = 0;
@@ -319,10 +319,5 @@ handleKey(event: KeyboardEvent): void {
 
     return rowsToClear.length; // Повертаємо кількість очищених рядків
   }
-  
 }
-
-
-
-// Removed incorrect Output function implementation
 
