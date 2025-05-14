@@ -1,8 +1,20 @@
 :host {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    background: #021b2b;
-  }
-  
+  display: flex;
+  flex-direction: column; /* Розташування елементів вертикально */
+  min-height: 100vh;
+  max-height: 100vh; /* Обмеження висоти екраном */
+  overflow: hidden; /* Приховує вихідний контент */
+  background: #021b2b;
+}
+
+app-header {
+  flex-shrink: 0; /* Забезпечує, що header не стискається */
+}
+
+router-outlet, app-game-board {
+  flex-grow: 1; /* Забезпечує, що контент займає весь доступний простір */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden; /* Додатково приховує вихідний контент */
+}

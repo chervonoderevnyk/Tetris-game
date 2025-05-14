@@ -1,0 +1,8 @@
+<div class="base-container">
+  <app-header [score]="score" [level]="level"></app-header>
+  <app-game-board 
+    (scoreChange)="onScoreChange($event)" 
+    (levelChange)="onLevelChange($event)">
+  </app-game-board>
+  <app-footer></app-footer>
+</div>

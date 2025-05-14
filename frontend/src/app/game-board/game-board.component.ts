@@ -1,15 +1,20 @@
-import { Component, OnInit, HostListener } from '@angular/core';
+import { Component, OnInit, HostListener, EventEmitter, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Tetromino, TETROMINOES } from './tetris/tetromino';
+import { Router, RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-game-board',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterModule],
   templateUrl: './game-board.component.html',
   styleUrls: ['./game-board.component.scss']
 })
 export class GameBoardComponent implements OnInit {
+
+  @Output() scoreChange = new EventEmitter<number>();
+  @Output() levelChange = new EventEmitter<number>();
+
   rows = 20;
   cols = 10;
   grid: string[][] = [];
@@ -22,6 +27,9 @@ export class GameBoardComponent implements OnInit {
   baseSpeed: number = 900; // Базова швидкість (мс)
   isGameRunning: boolean = false; // Стан гри
   isPaused: boolean = false; // Стан паузи
+
+
+  constructor(private router: Router) {}
 
   ngOnInit(): void {
     this.resetGrid();
@@ -68,29 +76,33 @@ export class GameBoardComponent implements OnInit {
     this.currentTetromino = this.nextTetromino; // Поточна фігура стає наступною
     this.position = [0, 4]; // Початкова позиція фігури
     this.nextTetromino = this.getRandomTetromino(); // Генеруємо нову наступну фігуру
-
+  
+    // Перевіряємо, чи можна розмістити нову фігуру
     const canPlace = this.currentTetromino.shape.every(([dy, dx]) => {
       const y = this.position[0] + dy;
       const x = this.position[1] + dx;
-
-      if (y < 0) return true;
+  
+      if (y < 0) return true; // Дозволяємо, якщо частина фігури виходить за верхню межу
       return (
         y >= 0 &&
         y < this.rows &&
         x >= 0 &&
         x < this.cols &&
-        this.grid[y][x] === ''
+        this.grid[y][x] === '' // Перевіряємо, чи клітинка порожня
       );
     });
-
+  
+    // Якщо фігуру не можна розмістити, завершуємо гру
     if (!canPlace) {
-      clearInterval(this.intervalId);
-      this.isGameRunning = false;
-      alert('💀 Game Over!');
+      clearInterval(this.intervalId); // Зупиняємо ігровий цикл
+      this.isGameRunning = false; // Встановлюємо стан гри як завершений
+      this.router.navigate(['/game-over'], {
+        queryParams: { score: this.score, level: this.level } // Передаємо бали та рівень
+      });
       return;
     }
-
-    this.drawTetromino();
+  
+    this.drawTetromino(); // Малюємо фігуру на дошці
   }
 
   getNextTetrominoCell(row: number, col: number): string {
@@ -171,32 +183,33 @@ export class GameBoardComponent implements OnInit {
   updateScore(rowsCleared: number): void {
     let points = 0;
   
-    // Визначаємо кількість балів залежно від кількості очищених рядків
     switch (rowsCleared) {
       case 1:
-        points = 10; // 1 рядок = 10 балів
+        points = 10;
         break;
       case 2:
-        points = 30; // 2 рядки = 30 балів
+        points = 30;
         break;
       case 3:
-        points = 40; // 3 рядки = 40 балів
+        points = 40;
         break;
       case 4:
-        points = 60; // 4 рядки = 60 балів
+        points = 60;
         break;
       default:
-        points = 0; // Якщо рядків не очищено, балів немає
+        points = 0;
     }
   
-    this.score += points; // Додаємо бали до загального рахунку
+    this.score += points;
   
-    // Оновлюємо рівень кожні 20 балів
-    const newLevel = Math.floor(this.score / 20) + 1;
+    const newLevel = Math.floor(this.score / 30) + 1;
     if (newLevel > this.level) {
       this.level = newLevel;
-      this.updateGameSpeed(); // Оновлюємо швидкість гри
+      this.updateGameSpeed();
     }
+    
+    this.scoreChange.emit(this.score);
+    this.levelChange.emit(this.level);
   }
 
   @HostListener('window:keydown', ['$event'])
@@ -308,8 +321,5 @@ handleKey(event: KeyboardEvent): void {
 
     return rowsToClear.length; // Повертаємо кількість очищених рядків
   }
-  
 }
-
-
 

@@ -1,13 +1,12 @@
 import { Component } from '@angular/core';
-import { GameBoardComponent } from './game-board/game-board.component';
+import { RouterOutlet } from '@angular/router';
+import { AuthPageComponent } from "./auth-page/auth-page.component";
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [GameBoardComponent],
+  imports: [RouterOutlet, AuthPageComponent],
   templateUrl: './app.component.html',
-  styleUrl: './app.component.scss'
+  styleUrls: ['./app.component.scss']
 })
-export class AppComponent {
-  title = 'frontend';
-}
+export class AppComponent {}

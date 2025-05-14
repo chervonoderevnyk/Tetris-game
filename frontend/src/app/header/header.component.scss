@@ -1,0 +1,65 @@
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  background-color: #333;
+  color: #fff;
+  font-size: 18px;
+}
+
+/* Стиль для назви */
+.title {
+  flex-grow: 1;
+  text-align: center;
+  font-size: 24px;
+  font-weight: 500;
+  color: #ffffff; /* Білий текст для кращого контрасту */
+  animation: pulse 2s infinite, colorShift 3s infinite, glow 1.5s infinite alternate; /* Додаємо анімації */
+  text-shadow: 0 0 1px #000, 0 0 2px #000, 0 0 3px #000; /* Чіткий чорний контур */
+}
+
+/* Анімація пульсації */
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Анімація переливання кольорів */
+@keyframes colorShift {
+  0% {
+    color: #f5d142; /* Пастельний жовтий */
+  }
+  25% {
+    color: #f5a142; /* Пастельний помаранчевий */
+  }
+  50% {
+    color: #a1f542; /* Пастельний зелений */
+  }
+  75% {
+    color: #42a1f5; /* Пастельний синій */
+  }
+  100% {
+    color: #f5d142; /* Повертаємося до пастельного жовтого */
+  }
+}
+
+/* Анімація сяйва */
+@keyframes glow {
+  0% {
+    text-shadow: 0 0 0.5px #f5d142, 0 0 1px #f5d142, 0 0 1.5px #f5a142, 0 0 2px #f5a142, 0 0 2.5px #f5a142;
+  }
+  100% {
+    text-shadow: 0 0 1px #a1f542, 0 0 2px #a1f542, 0 0 3px #42a1f5, 0 0 4px #42a1f5, 0 0 5px #42a1f5;
+  }
+}

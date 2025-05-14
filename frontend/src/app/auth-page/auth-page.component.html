@@ -1,0 +1,20 @@
+<div class="auth-container">
+    <h2>{{ isLoginMode ? 'Вхід у ТЕТРІС' : 'Реєстрація у ТЕТРІС' }}</h2>
+    <form (ngSubmit)="onSubmit()">
+      <div>
+        <label for="username">Ім'я: </label>
+        <input type="text" id="username" [(ngModel)]="username" name="username" required />
+      </div>
+      <div>
+        <label for="password">Пароль: </label>
+        <input type="password" id="password" [(ngModel)]="password" name="password" required />
+      </div>
+      <button type="submit">{{ isLoginMode ? 'Увійти' : 'Зареєструватися' }}</button>
+    </form>
+  
+    <p class="message" *ngIf="message">{{ message }}</p>
+  
+    <button class="toggle-button" (click)="toggleMode()">
+      {{ isLoginMode ? 'Зареєструватися' : 'Повернутись до входу' }}
+    </button>
+  </div>
