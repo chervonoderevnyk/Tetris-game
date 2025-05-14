@@ -1,8 +1,10 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectorRef, Component } from '@angular/core';
+import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
 import { GameBoardComponent } from "../game-board/game-board.component";
 import { HeaderComponent } from "../header/header.component";
 import { FooterComponent } from "../footer/footer.component";
+import { Router } from '@angular/router';
+import { AuthService } from '../services/auth.service';
 
 @Component({
   selector: 'app-base',
@@ -13,12 +15,22 @@ import { FooterComponent } from "../footer/footer.component";
 })
 
 
-export class BaseComponent {
+export class BaseComponent implements OnInit {
   score: number = 0;
   level: number = 1;
 
+  constructor(
+    private cdr: ChangeDetectorRef, 
+    private authService: AuthService, 
+    private router: Router
+  ) {}
 
-  constructor(private cdr: ChangeDetectorRef) {}
+  ngOnInit(): void {
+    const token = this.authService.getToken();
+    if (!token) {
+      this.router.navigate(['/']); // Повернення на сторінку входу, якщо токен відсутній
+    }
+  }
   
   onScoreChange(score: number): void {
     this.score = score;
