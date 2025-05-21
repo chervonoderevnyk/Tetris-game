@@ -18,6 +18,10 @@ import { AuthService } from '../services/auth.service';
 export class BaseComponent implements OnInit {
   score: number = 0;
   level: number = 1;
+  // userAvatar = '';
+  // userName = '';
+  userAvatar: string = '🙂';
+  userName: string = 'Гравець';
 
   constructor(
     private cdr: ChangeDetectorRef, 
@@ -26,9 +30,26 @@ export class BaseComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
-    const token = this.authService.getToken();
-    if (!token) {
-      this.router.navigate(['/']); // Повернення на сторінку входу, якщо токен відсутній
+    try {
+      const token = this.authService.getToken();
+      if (!token) {
+        this.router.navigate(['/']); // Повернення на сторінку входу, якщо токен відсутній
+      } else {
+        this.authService.getUserDetails().subscribe({
+          next: (user) => {
+            this.userAvatar = user?.avatar || '🤖'; // Отримуємо аватарку користувача
+            this.userName = user?.username || 'Гравець'; // Отримуємо ім'я користувача
+            this.cdr.detectChanges(); // Оновлюємо зміни в компоненті
+          },
+          error: (err) => {
+            console.error('Помилка отримання даних користувача:', err);
+            this.router.navigate(['/']);
+          }
+        });
+      }
+    } catch (error) {
+      console.error('Помилка отримання даних користувача:', error);
+      this.router.navigate(['/']);
     }
   }
   
