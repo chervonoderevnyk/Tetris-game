@@ -18,8 +18,6 @@ import { AuthService } from '../services/auth.service';
 export class BaseComponent implements OnInit {
   score: number = 0;
   level: number = 1;
-  // userAvatar = '';
-  // userName = '';
   userAvatar: string = '🙂';
   userName: string = 'Гравець';
 
@@ -37,7 +35,7 @@ export class BaseComponent implements OnInit {
       } else {
         this.authService.getUserDetails().subscribe({
           next: (user) => {
-            this.userAvatar = user?.avatar || '🤖'; // Отримуємо аватарку користувача
+            this.userAvatar = user?.avatar || '🙂'; // Отримуємо аватарку користувача
             this.userName = user?.username || 'Гравець'; // Отримуємо ім'я користувача
             this.cdr.detectChanges(); // Оновлюємо зміни в компоненті
           },
