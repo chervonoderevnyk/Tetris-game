@@ -3,6 +3,7 @@ import { AuthService } from '../services/auth.service';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
+import { availableAvatars } from '../../assets/emoji-avatars';
 
 @Component({
   selector: 'app-auth-page',
@@ -14,8 +15,10 @@ import { Router } from '@angular/router';
 export class AuthPageComponent {
   username: string = '';
   password: string = '';
-  isLoginMode: boolean = true; // Перемикач між логіном і реєстрацією
+  selectedAvatar: string = availableAvatars[0]; // Вибрана аватарка за замовчуванням
+  isLoginMode: boolean = true;
   message: string = '';
+  avatars = availableAvatars; // Список доступних аватарок
 
   constructor(private authService: AuthService, private router: Router) {}
 
@@ -31,20 +34,20 @@ export class AuthPageComponent {
           console.log('Submitted', this.username, this.password);
 
           this.authService.saveToken(response.tokenA);
-          this.router.navigate(['/base']); // Перенаправлення на BaseComponent
+          this.router.navigate(['/base']);
         },
         error: () => {
           this.message = 'Помилка входу. Перевірте дані.';
         }
       });
     } else {
-      this.authService.register(this.username, this.password).subscribe({
+      this.authService.register(this.username, this.password, this.selectedAvatar).subscribe({
         next: () => {
           this.message = 'Успішна реєстрація! Тепер увійдіть.';
           this.isLoginMode = true;
         },
-        error: () => {
-          this.message = 'Помилка реєстрації. Спробуйте ще раз.';
+        error: (err) => {
+          this.message = err?.error?.error || 'Помилка реєстрації. Спробуйте ще раз.';
         }
       });
     }

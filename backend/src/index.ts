@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import { AuthController } from './auth/auth.controller';
 import { authenticateToken } from './middleware/auth.middleware';
+import authRoutes from './routes/auth.routes';
 
 const app = express();
 app.use(cors());
@@ -13,6 +14,7 @@ app.get('/protected', authenticateToken, (req, res) => {
 
 app.post('/auth/register', AuthController.register);
 app.post('/auth/login', AuthController.login);
+app.use('/auth', authRoutes);
 
 const PORT = 3001;
 app.listen(PORT, () => console.log(`🚀 Server running on http://localhost:${PORT}`));

@@ -20,6 +20,6 @@ export class GameOverComponent {
   }
 
   restartGame(): void {
-    this.router.navigate(['/']);  // Перезапуск гри
+    this.router.navigate(['/base']);  // Перезапуск гри
   }
 }

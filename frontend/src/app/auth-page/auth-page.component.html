@@ -9,6 +9,17 @@
         <label for="password">Пароль: </label>
         <input type="password" id="password" [(ngModel)]="password" name="password" required />
       </div>
+      <div *ngIf="!isLoginMode">
+        <label for="avatar">Виберіть аватарку:</label>
+        <div class="avatar-list">
+          <span 
+            *ngFor="let avatar of avatars" 
+            [class.selected]="avatar === selectedAvatar" 
+            (click)="selectedAvatar = avatar">
+            {{ avatar }}
+          </span>
+        </div>
+      </div>
       <button type="submit">{{ isLoginMode ? 'Увійти' : 'Зареєструватися' }}</button>
     </form>
   

@@ -1,11 +1,13 @@
 <div class="header">
   <div class="score">
+    <span>📈 Рівень: {{ level }}</span>
     <span>🏆 Бали: {{ score }}</span>
   </div>
   <div class="title">
     <span>супер-пупер тетріс</span>
   </div>
-  <div class="level">
-    <span>📈 Рівень: {{ level }}</span>
+  <div class="level-avatar">
+     <span class="user-name" *ngIf="userName && userName !== ''">{{ userName }}</span>
+    <span class="avatar" *ngIf="avatar">{{ avatar }}</span>
   </div>
 </div>

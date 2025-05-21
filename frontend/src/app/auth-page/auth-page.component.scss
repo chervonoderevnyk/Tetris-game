@@ -95,3 +95,29 @@
   .auth-container .toggle-button:hover {
     background-color: #5a6268;
   }
+
+  /* filepath: /home/chornyi/tetris-game/frontend/src/app/auth-page/auth-page.component.scss */
+.avatar-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.avatar-list span {
+  font-size: 24px;
+  cursor: pointer;
+  padding: 5px;
+  border: 2px solid transparent;
+  border-radius: 50%;
+  transition: border-color 0.3s;
+}
+
+.avatar-list span:hover {
+  border-color: #007bff;
+}
+
+.avatar-list span.selected {
+  border-color: #007bff;
+  background-color: #e6f7ff;
+}
